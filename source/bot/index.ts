@@ -8,7 +8,7 @@ import * as TelegrafSessionLocal from 'telegraf-session-local';
 import {MyContext} from './my-context';
 import {menu} from './menu';
 import {connectDB} from "../db";
-import {getCurrency} from "../magic";
+import {getCurrency} from "../controller";
 
 const token = (existsSync('/run/secrets/bot-token.txt') && readFileSync('/run/secrets/bot-token.txt', 'utf8').trim()) ||
 	(existsSync('bot-token.txt') && readFileSync('bot-token.txt', 'utf8').trim()) ||
@@ -45,10 +45,9 @@ bot.catch(error => {
 
 export async function start(): Promise<void> {
 	connectDB();
-	// The commands you set here will be shown as /commands like /start or /magic in your telegram client.
+	// The commands you set here will be shown as /commands like /start in your telegram client.
 	// await bot.telegram.setMyCommands([
 	// 	{command: 'start', description: 'open the menu'},
-	// 	{command: 'magic', description: 'do magic'},
 	// 	{command: 'help', description: 'show the help'},
 	// 	{command: 'settings', description: 'open the settings'}
 	// ]);
@@ -59,7 +58,6 @@ export async function start(): Promise<void> {
 		const text = ctx.update.message.text;
 		const reply = await getCurrency(text);
 		ctx.reply(reply);
-	})
-	bot.hears('hi', (ctx) => ctx.reply('Hey there'));
+	});
 	console.log(new Date(), 'Bot started as', bot.botInfo?.username);
 }
