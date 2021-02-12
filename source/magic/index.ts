@@ -1,24 +1,25 @@
-export function feedTheDragons(): void {
-	// Sometimes you need to initialize stuff.
-	// Like feeding dragons before you can fight them all day long.
-	console.log('Feed the dragons…');
+import {getCurrencyData} from "../api/currency";
 
-	console.log('Looks like they arnt hungry anymore. But somehow the poeple helping you transporting the food are gone too…');
+export enum Currency {
+	RUB,
+	USD,
+	MXN
 }
 
-export function fightDragons(): string {
-	// In a folder like this you can do stuff not directly related to your Telegram bot.
-	// When your bot will need to fight dragons but doesnt do it by itself this is the right place to do it.
-	return 'Fought the dragon. Dragon vanished. No treasure. Sad.';
-}
+export const getCurrency = async (text: string): Promise<string> => {
+	const response = await getCurrencyData();
+	console.log(response);
+	if (text) {
+		const numberArr = text.match(/(\d+)/igm);
 
-export function danceWithFairies(): string {
-	const thoughtsWhileDancing = [
-		'No one else can see the fairies but you.',
-		'People think you are crazy.',
-		'But that is ok.',
-		'Everyone is.'
-	];
+		if (numberArr && numberArr[0]) {
+			const number = Number(numberArr[0])
+			const dollar = number * response.usd / response.mxn;
+			const rub = number * response.rub / response.mxn;
 
-	return thoughtsWhileDancing.join('\n');
+			return `${number} MXN равно\n - ${dollar.toFixed(2)} USD\n - ${rub.toFixed(0)} рублей`
+		}
+	}
+
+	return "Ты хуйню написал, должны быть цифры"
 }

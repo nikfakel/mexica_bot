@@ -5,10 +5,10 @@ import {MenuMiddleware} from 'telegraf-inline-menu';
 import {Telegraf} from 'telegraf';
 import * as TelegrafSessionLocal from 'telegraf-session-local';
 
-import {fightDragons, danceWithFairies} from '../magic';
-
 import {MyContext} from './my-context';
 import {menu} from './menu';
+import {connectDB} from "../db";
+import {getCurrency} from "../magic";
 
 const token = (existsSync('/run/secrets/bot-token.txt') && readFileSync('/run/secrets/bot-token.txt', 'utf8').trim()) ||
 	(existsSync('bot-token.txt') && readFileSync('bot-token.txt', 'utf8').trim()) ||
@@ -34,20 +34,6 @@ const i18n = new TelegrafI18n({
 
 bot.use(i18n.middleware());
 
-bot.command('help', async context => context.reply(context.i18n.t('help')));
-
-bot.command('magic', async context => {
-	const combatResult = fightDragons();
-	const fairyThoughts = danceWithFairies();
-
-	let text = '';
-	text += combatResult;
-	text += '\n\n';
-	text += fairyThoughts;
-
-	return context.reply(text);
-});
-
 const menuMiddleware = new MenuMiddleware('/', menu);
 bot.command('start', async context => menuMiddleware.replyToContext(context));
 bot.command('settings', async context => menuMiddleware.replyToContext(context, '/settings/'));
@@ -58,14 +44,22 @@ bot.catch(error => {
 });
 
 export async function start(): Promise<void> {
+	connectDB();
 	// The commands you set here will be shown as /commands like /start or /magic in your telegram client.
-	await bot.telegram.setMyCommands([
-		{command: 'start', description: 'open the menu'},
-		{command: 'magic', description: 'do magic'},
-		{command: 'help', description: 'show the help'},
-		{command: 'settings', description: 'open the settings'}
-	]);
+	// await bot.telegram.setMyCommands([
+	// 	{command: 'start', description: 'open the menu'},
+	// 	{command: 'magic', description: 'do magic'},
+	// 	{command: 'help', description: 'show the help'},
+	// 	{command: 'settings', description: 'open the settings'}
+	// ]);
 
 	await bot.launch();
+
+	bot.on('text', async (ctx) => {
+		const text = ctx.update.message.text;
+		const reply = await getCurrency(text);
+		ctx.reply(reply);
+	})
+	bot.hears('hi', (ctx) => ctx.reply('Hey there'));
 	console.log(new Date(), 'Bot started as', bot.botInfo?.username);
 }

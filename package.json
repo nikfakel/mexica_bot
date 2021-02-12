@@ -16,7 +16,7 @@
 	"scripts": {
 		"build": "del-cli dist && tsc",
 		"prepack": "npm run build",
-		"start": "tsc --sourceMap && node --unhandled-rejections=strict -r source-map-support/register dist/source/index.js",
+		"start": "tsc --sourceMap && node --unhandled-rejections=strict -r source-map-support/register dist/index.js",
 		"test": "tsc --sourceMap && xo && nyc ava"
 	},
 	"engines": {
@@ -24,6 +24,8 @@
 	},
 	"dependencies": {
 		"@edjopato/telegraf-i18n": "^0.2.0",
+		"mongoose": "^5.11.15",
+		"node-fetch": "^2.6.1",
 		"source-map-support": "^0.5.19",
 		"telegraf": "^4.0.0",
 		"telegraf-inline-menu": "^6.0.0",
