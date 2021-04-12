@@ -1,0 +1,6 @@
+node_modules
+bot-token.txt
+weather-token.txt
+.idea
+/dist
+/persist
