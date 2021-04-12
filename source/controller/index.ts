@@ -61,3 +61,14 @@ export const getCurrency = async (text: string): Promise<string> => {
 
 	return "Ты хуйню написал, должны быть цифры"
 }
+
+type TCTX = {
+	update: {message: {text: string }};
+	reply: (text: string) => void;
+}
+
+export const handleText = async (ctx: TCTX ) => {
+	const text = ctx.update.message.text;
+	const reply = await getCurrency(text);
+	ctx.reply(reply);
+}

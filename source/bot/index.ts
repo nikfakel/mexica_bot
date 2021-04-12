@@ -8,7 +8,7 @@ import * as TelegrafSessionLocal from 'telegraf-session-local';
 import {MyContext} from './my-context';
 import {menu} from './menu';
 import {connectDB} from "../db";
-import {getCurrency} from "../controller";
+import {handleText} from "../controller";
 
 const token = (existsSync('/run/secrets/bot-token.txt') && readFileSync('/run/secrets/bot-token.txt', 'utf8').trim()) ||
 	(existsSync('bot-token.txt') && readFileSync('bot-token.txt', 'utf8').trim()) ||
@@ -17,7 +17,7 @@ if (!token) {
 	throw new Error('You have to provide the bot-token from @BotFather via file (bot-token.txt) or environment variable (BOT_TOKEN)');
 }
 
-const bot = new Telegraf<MyContext>(token);
+export const bot = new Telegraf<MyContext>(token);
 
 const localSession = new TelegrafSessionLocal({
 	database: 'persist/sessions.json'
@@ -54,10 +54,6 @@ export async function start(): Promise<void> {
 
 	await bot.launch();
 
-	bot.on('text', async (ctx) => {
-		const text = ctx.update.message.text;
-		const reply = await getCurrency(text);
-		ctx.reply(reply);
-	});
+	bot.on('text', handleText);
 	console.log(new Date(), 'Bot started as', bot.botInfo?.username);
 }

@@ -45,6 +45,7 @@ type TWeatherData = {
 type TWeather = {
     temp: number;
     feels_like: number;
+    description: string;
 }
 
 export const getWeather = async (): Promise<TWeather> => {
@@ -54,5 +55,6 @@ export const getWeather = async (): Promise<TWeather> => {
     return {
         temp: response.main.temp,
         feels_like: response.main.feels_like,
+        description: response.weather[0].description,
     }
 }
